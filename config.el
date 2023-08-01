@@ -149,6 +149,11 @@
 
 (use-package! lsp)
 
+(setq lsp-ui-peek-enable t)
+(setq lsp-ui-doc-show-with-cursor t)
+(setq lsp-ui-doc-position 'top)
+(setq lsp-ui-sideline-show-hover nil)
+
 (pushnew! lsp-language-id-configuration '(odin-mode . "odin") '(nim-mode . "nim"))
 
 ;; Odin
