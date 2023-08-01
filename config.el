@@ -70,16 +70,6 @@
 
 (add-go-bin-path)
 
-;; Auto-formatting
-(setq auto-format-modes '(go-mode odin-mode))
-
-(defun maybe-auto-format-buffer ()
-  (if (member major-mode auto-format-modes)
-      (lsp-format-buffer)
-    nil))
-
-(add-hook 'before-save-hook #'maybe-auto-format-buffer)
-
 ;; (setq doom-localleader-key (kbd ","))
 
 ;; Unbind `s` as 2-character search
@@ -178,3 +168,30 @@
 (add-hook 'nim-mode-hook #'lsp)
 
 (setq mpdel-prefix-key (kbd "C-. z"))
+
+;; Go
+(setq gofmt-command "golines")
+(setq gofmt-args '("--base-formatter=gofumpt"))
+
+;; Auto-formatting
+(setq auto-format-modes
+      '((odin-mode . lsp-format-buffer)
+        (go-mode . gofmt)))
+
+(defun get-formatter-function (mode)
+  (cdr (assoc mode auto-format-modes)))
+
+(defun auto-format-buffer ()
+  (let ((formatter-function (get-formatter-function major-mode)))
+    (if formatter-function
+        (progn
+          (message
+            (concat "Formatting buffer with function:" (symbol-name formatter-function)))
+          (funcall formatter-function))
+          
+        (progn
+          (message
+            (concat "No formatter function found for mode:" (symbol-name major-mode)))))))
+
+
+(add-hook 'before-save-hook #'auto-format-buffer)
